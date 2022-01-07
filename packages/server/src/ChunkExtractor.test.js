@@ -783,6 +783,37 @@ describe('ChunkExtrator', () => {
             `)
     })
 
+    it('should return main script tag without chunk - module chunks', () => {
+      expect(extractor.getLinkElements(null, true)).toMatchInlineSnapshot(`
+                Array [
+                  <link
+                    as="style"
+                    data-chunk="main"
+                    href="/dist/node/main.css"
+                    rel="preload"
+                  />,
+                  <link
+                    as="script"
+                    data-chunk="main"
+                    href="/dist/node/main.js"
+                    rel="modulepreload"
+                  />,
+                  <link
+                    as="script"
+                    data-parent-chunk="main"
+                    href="/dist/node/letters-C.js"
+                    rel="modulepreload"
+                  />,
+                  <link
+                    as="script"
+                    data-parent-chunk="main"
+                    href="/dist/node/letters-D.js"
+                    rel="prefetch"
+                  />,
+                ]
+            `)
+    })
+
     it('should return other chunks if referenced', () => {
       extractor.addChunk('letters-A')
       expect(extractor.getLinkElements()).toMatchInlineSnapshot(`
@@ -816,6 +847,50 @@ describe('ChunkExtrator', () => {
             data-parent-chunk="main"
             href="/dist/node/letters-C.js"
             rel="preload"
+          />,
+          <link
+            as="script"
+            data-parent-chunk="main"
+            href="/dist/node/letters-D.js"
+            rel="prefetch"
+          />,
+        ]
+      `)
+    })
+
+    it('should return other chunks if referenced - module chunks', () => {
+      extractor.addChunk('letters-A')
+      expect(extractor.getLinkElements(null, true)).toMatchInlineSnapshot(`
+        Array [
+          <link
+            as="style"
+            data-chunk="letters-A"
+            href="/dist/node/letters-A.css"
+            rel="preload"
+          />,
+          <link
+            as="style"
+            data-chunk="main"
+            href="/dist/node/main.css"
+            rel="preload"
+          />,
+          <link
+            as="script"
+            data-chunk="main"
+            href="/dist/node/main.js"
+            rel="modulepreload"
+          />,
+          <link
+            as="script"
+            data-chunk="letters-A"
+            href="/dist/node/letters-A.js"
+            rel="modulepreload"
+          />,
+          <link
+            as="script"
+            data-parent-chunk="main"
+            href="/dist/node/letters-C.js"
+            rel="modulepreload"
           />,
           <link
             as="script"
@@ -871,9 +946,9 @@ describe('ChunkExtrator', () => {
       `)
     })
 
-    it('should add extraProps if specified', () => {
+    it('should add extraProps if specified - module chunks', () => {
       extractor.addChunk('letters-A')
-      expect(extractor.getLinkElements({ nonce: 'testnonce' }))
+      expect(extractor.getLinkElements({ nonce: 'testnonce' }, true))
         .toMatchInlineSnapshot(`
         Array [
           <link
@@ -895,21 +970,21 @@ describe('ChunkExtrator', () => {
             data-chunk="main"
             href="/dist/node/main.js"
             nonce="testnonce"
-            rel="preload"
+            rel="modulepreload"
           />,
           <link
             as="script"
             data-chunk="letters-A"
             href="/dist/node/letters-A.js"
             nonce="testnonce"
-            rel="preload"
+            rel="modulepreload"
           />,
           <link
             as="script"
             data-parent-chunk="main"
             href="/dist/node/letters-C.js"
             nonce="testnonce"
-            rel="preload"
+            rel="modulepreload"
           />,
           <link
             as="script"

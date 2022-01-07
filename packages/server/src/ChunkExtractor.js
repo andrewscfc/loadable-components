@@ -167,12 +167,17 @@ function assetToLinkTag(asset, extraProps) {
   )}>`
 }
 
-function assetToLinkElement(asset, extraProps) {
+function assetToLinkElement(asset, extraProps, chunksAsModules) {
   const hint = LINK_ASSET_HINTS[asset.type]
   const props = {
     key: asset.url,
     [hint]: asset.chunk,
-    rel: asset.linkType,
+    rel:
+      asset.scriptType === 'script' &&
+      chunksAsModules &&
+      asset.linkType === 'preload'
+        ? 'modulepreload'
+        : asset.linkType,
     as: asset.scriptType,
     href: asset.url,
     ...handleExtraProps(asset, extraProps),
@@ -480,9 +485,11 @@ class ChunkExtractor {
     return joinTags(linkTags)
   }
 
-  getLinkElements(extraProps = {}) {
+  getLinkElements(extraProps = {}, chunksAsModules) {
     const assets = this.getPreAssets()
-    return assets.map(asset => assetToLinkElement(asset, extraProps))
+    return assets.map(asset =>
+      assetToLinkElement(asset, extraProps, chunksAsModules),
+    )
   }
 }
 
